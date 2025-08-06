@@ -27,7 +27,7 @@ export const BookingDetailPage: React.FC<BookingDetailPageProps> = ({
   onBack
 }) => {
   const selectedCleaner = cleaners.find(c => c.id === bookingData.selectedCleaner);
-  const [activeTab, setActiveTab] = useState<TabType>('receipt');
+  const [activeTab, setActiveTab] = useState<TabType>('chat');
   const [newMessage, setNewMessage] = useState('');
   const messagesContainerRef = useRef<ScrollView>(null);
   const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: boolean}>({});

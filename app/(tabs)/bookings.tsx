@@ -182,13 +182,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: 'white',
-    marginBottom: 4,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
   },
   scrollView: {
     flex: 1,
