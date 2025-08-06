@@ -25,6 +25,10 @@ export interface BookingData {
     cardholderName: string;
     billingAddress: string;
     paymentCompleted: string;
+    // Guest checkout fields
+    guestEmail?: string;
+    guestName?: string;
+    isGuestCheckout?: string;
   }
   
   export interface CleanerBookingHistory {
@@ -53,4 +57,57 @@ export interface BookingData {
     cleaner: Cleaner;
     confirmedAt: string;
     status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
+  }
+
+  // User Authentication Types
+  export interface User {
+    id: string;
+    name: string;
+    email: string;
+    profileImage?: string;
+    phoneNumber?: string;
+    defaultAddress?: string;
+    defaultLocation?: string;
+    language?: string;
+    theme?: 'light' | 'dark' | 'system';
+    notifications?: {
+      push: boolean;
+      email: boolean;
+      sms: boolean;
+    };
+    paymentMethods?: PaymentMethod[];
+    addresses?: Address[];
+    createdAt: string;
+    lastLoginAt: string;
+  }
+
+  export interface PaymentMethod {
+    id: string;
+    type: 'card' | 'paypal' | 'apple_pay' | 'google_pay';
+    cardNumber?: string; // Last 4 digits
+    expiryDate?: string;
+    cardholderName?: string;
+    isDefault: boolean;
+  }
+
+  export interface Address {
+    id: string;
+    label: string; // 'Home', 'Work', etc.
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    isDefault: boolean;
+  }
+
+  export interface AuthState {
+    isAuthenticated: boolean;
+    user: User | null;
+    isLoading: boolean;
+    isGuest: boolean;
+    guestData?: {
+      name: string;
+      email: string;
+      phoneNumber?: string;
+    };
   }

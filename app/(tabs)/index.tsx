@@ -3,6 +3,8 @@ import { ProgressBar } from '@/components/ProgressBar';
 import React, { useState } from 'react';
 import { Alert, View } from 'react-native';
 // '../../components/ProgressBar';
+import { CheckoutAuthModal } from '@/components/CheckoutAuthModal';
+import { useAuth } from '@/hooks/useAuth';
 import { useBookingFlow } from '@/hooks/useBookingFlow';
 import { commonStyles } from '@/styles/commonStyles';
 import { isValidAddress, isValidPhoneNumber, isValidZipCode } from '@/utils/zipCodeUtils';
@@ -33,10 +35,15 @@ export default function HomeScreen() {
     saveConfirmedBooking
   } = useBookingFlow();
 
+  const { isAuthenticated, isGuest, guestData } = useAuth();
+
   // Payment processing state
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentProcessor, setPaymentProcessor] = useState<(() => Promise<boolean>) | null>(null);
   const [previousStep, setPreviousStep] = useState<number | null>(null);
+  
+  // Checkout authentication state
+  const [showCheckoutAuth, setShowCheckoutAuth] = useState(false);
 
   // Get cleaners data with current timing preference
   const cleaners = getCleaners(bookingData.timing, bookingData);
@@ -158,6 +165,39 @@ export default function HomeScreen() {
     setPaymentProcessor(() => processor);
   };
 
+  // Handle checkout authentication flow
+  const handleCheckoutAuthRequired = () => {
+    if (isAuthenticated || isGuest) {
+      // User is already authenticated or is a guest, proceed to payment
+      if (isGuest && guestData) {
+        // Update booking data with guest information
+        updateBookingData('guestName', guestData.name);
+        updateBookingData('guestEmail', guestData.email);
+        updateBookingData('isGuestCheckout', 'true');
+      }
+      setCurrentStep(7); // Go to payment page
+    } else {
+      // Show checkout authentication modal
+      setShowCheckoutAuth(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setShowCheckoutAuth(false);
+    setCurrentStep(7); // Go to payment page
+  };
+
+  const handleGuestContinue = () => {
+    setShowCheckoutAuth(false);
+    // Update booking data with guest information
+    if (guestData) {
+      updateBookingData('guestName', guestData.name);
+      updateBookingData('guestEmail', guestData.email);
+      updateBookingData('isGuestCheckout', 'true');
+    }
+    setCurrentStep(7); // Go to payment page
+  };
+
   // Navigation configuration for each step
   const getNavigationConfig = () => {
     const selectedCleaner = cleaners.find(c => c.id === bookingData.selectedCleaner);
@@ -261,10 +301,7 @@ export default function HomeScreen() {
               prevStep();
             }
           },
-          onNext: () => {
-            // Go to payment page for both scheduled and ASAP
-            setCurrentStep(7);
-          },
+          onNext: handleCheckoutAuthRequired, // Updated to handle authentication
           nextDisabled: !isValidAddress(bookingData.homeAddress) || !isValidPhoneNumber(bookingData.phoneNumber),
           nextText: 'Continue to Payment'
         };
@@ -460,38 +497,48 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={commonStyles.container}>
-      {currentStep > 0 && (
-        <ProgressBar 
-          currentStep={getDisplayStep()} 
-          totalSteps={getTotalSteps()} 
-        />
-      )}
-      <View style={{ flex: 1 }}>
-        {renderCurrentPage()}
-      </View>
-      {currentStep > 0 && (
-        <View style={{ 
-          position: 'absolute', 
-          bottom: 0, 
-          left: 0, 
-          right: 0, 
-          backgroundColor: '#667eea',
-          paddingHorizontal: 20,
-          paddingBottom: 40,
-          paddingTop: 10 // Reduced from 20 to minimize space above buttons
-        }}>
-          <NavigationButtons
-            onBack={navigationConfig.onBack}
-            onNext={navigationConfig.onNext || (() => {})}
-            nextDisabled={navigationConfig.nextDisabled}
-            nextText={navigationConfig.nextText}
-            showBack={navigationConfig.showBack}
-            showNext={navigationConfig.showNext}
-            isPaymentPage={currentStep === 7}
+    <>
+      <View style={commonStyles.container}>
+        {currentStep > 0 && (
+          <ProgressBar 
+            currentStep={getDisplayStep()} 
+            totalSteps={getTotalSteps()} 
           />
+        )}
+        <View style={{ flex: 1 }}>
+          {renderCurrentPage()}
         </View>
-      )}
-    </View>
+        {currentStep > 0 && (
+          <View style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            left: 0, 
+            right: 0, 
+            backgroundColor: '#667eea',
+            paddingHorizontal: 20,
+            paddingBottom: 40,
+            paddingTop: 10 // Reduced from 20 to minimize space above buttons
+          }}>
+            <NavigationButtons
+              onBack={navigationConfig.onBack}
+              onNext={navigationConfig.onNext || (() => {})}
+              nextDisabled={navigationConfig.nextDisabled}
+              nextText={navigationConfig.nextText}
+              showBack={navigationConfig.showBack}
+              showNext={navigationConfig.showNext}
+              isPaymentPage={currentStep === 7}
+            />
+          </View>
+        )}
+      </View>
+
+      {/* Checkout Authentication Modal */}
+      <CheckoutAuthModal
+        visible={showCheckoutAuth}
+        onClose={() => setShowCheckoutAuth(false)}
+        onAuthSuccess={handleAuthSuccess}
+        onGuestContinue={handleGuestContinue}
+      />
+    </>
   );
 }
