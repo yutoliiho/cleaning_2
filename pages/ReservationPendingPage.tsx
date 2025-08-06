@@ -27,12 +27,6 @@ export const ReservationPendingPage: React.FC<ReservationPendingPageProps> = ({
       subtitle="We're waiting for cleaner confirmation"
       scrollable
     >
-      <View style={styles.pendingContainer}>
-        <Text style={styles.pendingIcon}>⏳</Text>
-        <Text style={styles.pendingMessage}>
-          We are waiting for {selectedCleaner?.name} to confirm your appointment for {bookingData.selectedTimeSlot}.
-        </Text>
-      </View>
 
       <View style={styles.bookingSummary}>
         <Text style={styles.summaryTitle}>Booking Summary</Text>
@@ -63,8 +57,10 @@ export const ReservationPendingPage: React.FC<ReservationPendingPageProps> = ({
           style={[commonStyles.optionCard, bookingData.allowSubstitute === 'true' && commonStyles.selected]}
           onPress={() => updateBookingData('allowSubstitute', 'true')}
         >
-          <Text style={commonStyles.optionTitle}>Yes, find me another cleaner</Text>
-          <Text style={commonStyles.optionDescription}>We'll match you with another highly-rated, verified cleaner</Text>
+          <Text style={commonStyles.optionTitle}>Yes, please substitute if needed</Text>
+          <Text style={commonStyles.optionDescription}>We'll match you with a verified cleaner.</Text>
+          <Text> </Text>
+          <Text style={commonStyles.optionDescription}>This is recommended for better experience.</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -106,7 +102,7 @@ const pendingStyles = StyleSheet.create({
     marginBottom: 32,
   },
   summaryTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: '#333',
     marginBottom: 16,
@@ -118,22 +114,22 @@ const pendingStyles = StyleSheet.create({
     marginBottom: 8,
   },
   summaryLabel: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#666',
     fontWeight: '600',
   },
   summaryValue: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#333',
     fontWeight: '600',
   },
   substituteSection: {
-    marginTop: 20,
+    // marginTop: 10,
   },
   substituteQuestion: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: 'white',
     marginBottom: 16,
     textAlign: 'center',
   },

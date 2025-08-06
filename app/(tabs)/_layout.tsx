@@ -10,7 +10,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { currentStep } = useBookingFlow();
+  const { currentStep, isBookingDetailActive } = useBookingFlow();
 
   return (
     <Tabs
@@ -19,7 +19,9 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarStyle: currentStep === 0 ? {
+        tabBarStyle: isBookingDetailActive ? {
+          display: 'none'
+        } : currentStep === 0 ? {
           position: 'absolute',
         } : {
           display: 'none'
@@ -33,7 +35,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="bookings"
         options={{
           title: 'Bookings',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,

@@ -28,17 +28,17 @@ export const commonStyles = StyleSheet.create({
     borderColor: '#00D4AA',
   },
   optionTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333',
     marginBottom: 8,
   },
   optionDescription: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#666',
   },
   formGroup: {
-    marginBottom: 32,
+    // marginBottom: 32,
   },
   formLabel: {
     fontSize: 18,

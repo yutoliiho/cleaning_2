@@ -1,9 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Cleaner } from '../types';
+import { BookingData, Cleaner } from '../types';
 
 interface CleanerCardProps {
   cleaner: Cleaner;
+  bookingData: BookingData;
   isSelected: boolean;
   onSelectCleaner: (cleanerId: string) => void;
   onSelectTimeSlot: (cleanerId: string, timeSlot: string) => void;
@@ -11,6 +12,7 @@ interface CleanerCardProps {
 
 export const CleanerCard: React.FC<CleanerCardProps> = ({
   cleaner,
+  bookingData,
   isSelected,
   onSelectCleaner,
   onSelectTimeSlot

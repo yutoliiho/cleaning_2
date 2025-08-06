@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface PageContainerProps {
@@ -6,20 +6,27 @@ interface PageContainerProps {
   subtitle?: string;
   children: ReactNode;
   scrollable?: boolean;
+  scrollViewRef?: RefObject<ScrollView | null>;
 }
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   title,
   subtitle,
   children,
-  scrollable = false
+  scrollable = false,
+  scrollViewRef
 }) => {
   const Container = scrollable ? ScrollView : View;
   const containerStyle = scrollable ? styles.scrollPageContainer : styles.pageContainer;
 
   return (
-    <Container style={scrollable ? styles.scrollContainer : undefined} 
-             contentContainerStyle={scrollable ? containerStyle : undefined}>
+    <Container 
+      ref={scrollable ? scrollViewRef : undefined}
+      style={scrollable ? styles.scrollContainer : undefined} 
+      contentContainerStyle={scrollable ? containerStyle : undefined}
+      showsVerticalScrollIndicator={scrollable}
+      indicatorStyle={scrollable ? "white" : undefined}
+    >
       <View style={!scrollable ? containerStyle : undefined}>
         <Text style={styles.title}>{title}</Text>
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -36,14 +43,14 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     padding: 20,
-    paddingBottom: 120, // Add space for fixed navigation buttons
+    paddingBottom: 40, // Increased from 20 to ensure proper spacing
     justifyContent: 'center',
     minHeight: 600,
   },
   scrollPageContainer: {
     flexGrow: 1,
     padding: 20,
-    paddingBottom: 120, // Add space for fixed navigation buttons
+    paddingBottom: 120, // Increased from 40 to add more space at bottom for scrollable pages
     justifyContent: 'flex-start',
     minHeight: 600,
   },

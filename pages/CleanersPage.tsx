@@ -27,11 +27,12 @@ export const CleanersPage: React.FC<CleanersPageProps> = ({
     subtitle={bookingData.timing === 'asap' ? 'Ready to clean today' : 'Available for your selected time'}
     scrollable
   >
-    <View style={{ marginTop: 20, gap: 16 }}>
+    <View style={{ gap: 15 }}>
       {cleaners.map((cleaner) => (
         <CleanerCard
           key={cleaner.id}
           cleaner={cleaner}
+          bookingData={bookingData}
           isSelected={bookingData.selectedCleaner === cleaner.id}
           onSelectCleaner={onSelectCleaner}
           onSelectTimeSlot={onSelectTimeSlot}

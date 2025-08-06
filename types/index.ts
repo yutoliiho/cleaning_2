@@ -1,5 +1,6 @@
 export interface BookingData {
     zipCode: string;
+    neighborhood: string; // Added for neighborhood lookup display
     cleaningType: string;
     bedrooms: string;
     bathrooms: string;
@@ -16,6 +17,23 @@ export interface BookingData {
     phoneNumber: string;
     bookingNotes: string;
     allowSubstitute: string;
+    // Payment fields
+    paymentMethod: string;
+    cardNumber: string;
+    expiryDate: string;
+    cvv: string;
+    cardholderName: string;
+    billingAddress: string;
+    paymentCompleted: string;
+  }
+  
+  export interface CleanerBookingHistory {
+    bookingId: string;
+    date: string;
+    cleaningType: string;
+    status: 'completed' | 'cancelled';
+    rating?: number;
+    review?: string;
   }
   
   export interface Cleaner {
@@ -26,4 +44,13 @@ export interface BookingData {
     profilePic: any;
     verified: boolean;
     availableSlots: string[];
+    bookingHistory?: CleanerBookingHistory[];
+  }
+
+  export interface ConfirmedBooking {
+    id: string;
+    bookingData: BookingData;
+    cleaner: Cleaner;
+    confirmedAt: string;
+    status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
   }
