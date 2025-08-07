@@ -62,40 +62,8 @@ export default function HomeScreen() {
   const handleViewCleanerProfile = () => {
     setPreviousStep(currentStep); // Store current step before navigating
     
-    // If coming from BookingPage (step 6), go to BookingDetailPage
-    if (currentStep === 6) {
-      setCurrentStep(10); // Go to BookingDetailPage
-    } else {
-      // For other contexts, go to CleanerProfileDetailPage
-      setCurrentStep(5); // Go to cleaner profile detail page
-    }
-  };
-
-  const handleBookAgain = () => {
-    // Reset booking data for a new booking but keep the selected cleaner
-    const currentCleanerId = bookingData.selectedCleaner;
-    const currentCleaner = cleaners.find(c => c.id === currentCleanerId);
-    
-    // Reset to step 1 (cleaning type) but preserve cleaner selection
-    setCurrentStep(1);
-    
-    // Reset booking data but keep zip code and cleaner selection
-    updateBookingData('cleaningType', '');
-    updateBookingData('bedrooms', '2');
-    updateBookingData('bathrooms', '2'); 
-    updateBookingData('squareFootage', '');
-    updateBookingData('timing', '');
-    updateBookingData('selectedDate', '');
-    updateBookingData('selectedTime', '');
-    updateBookingData('selectedHour', '');
-    updateBookingData('selectedMinute', '');
-    updateBookingData('selectedTimeSlot', '');
-    updateBookingData('bookingHours', '2');
-    updateBookingData('homeAddress', '');
-    updateBookingData('phoneNumber', '');
-    updateBookingData('bookingNotes', '');
-    updateBookingData('allowSubstitute', 'true');
-    // Keep selectedCleaner to pre-select this cleaner in the flow
+    // Always go to CleanerProfileDetailPage to view cleaner's about/profile information
+    setCurrentStep(5); // Go to cleaner profile detail page
   };
 
   const handleCompleteBooking = async () => {
@@ -415,7 +383,6 @@ export default function HomeScreen() {
             bookingData={bookingData}
             cleaners={cleaners}
             onSelectTimeSlot={handleTimeSlotSelection}
-            onBookAgain={handleBookAgain}
           />
         );
       case 6:

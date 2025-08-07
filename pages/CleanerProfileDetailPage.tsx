@@ -9,48 +9,18 @@ interface CleanerProfileDetailPageProps {
   bookingData: BookingData;
   cleaners: Cleaner[];
   onSelectTimeSlot?: (cleanerId: string, timeSlot: string) => void;
-  onBookAgain?: () => void;
 }
 
 export const CleanerProfileDetailPage: React.FC<CleanerProfileDetailPageProps> = ({
   bookingData,
   cleaners,
-  onSelectTimeSlot,
-  onBookAgain
+  onSelectTimeSlot
 }) => {
   const selectedCleaner = cleaners.find(c => c.id === bookingData.selectedCleaner);
   
   if (!selectedCleaner) {
     return null;
   }
-
-  // Check if this is a confirmed appointment (coming from confirmation page)
-  const isConfirmedBooking = (bookingData.timing === 'scheduled' && 
-    bookingData.selectedDate && 
-    bookingData.selectedHour && 
-    bookingData.selectedMinute) ||
-    (bookingData.timing === 'asap' && 
-    bookingData.allowSubstitute === 'true' &&
-    bookingData.selectedCleaner &&
-    bookingData.selectedTimeSlot);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
-  const formatTime = (hour: string, minute: string) => {
-    const hourNum = parseInt(hour);
-    const minuteNum = parseInt(minute);
-    const hour12 = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
-    const ampm = hourNum >= 12 ? 'PM' : 'AM';
-    return `${hour12}:${minuteNum.toString().padStart(2, '0')} ${ampm}`;
-  };
 
   const formatBookingHistoryDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -130,67 +100,11 @@ export const CleanerProfileDetailPage: React.FC<CleanerProfileDetailPageProps> =
               </View>
             ))}
           </View>
-          
-          {/* Book Again Button */}
-          <TouchableOpacity 
-            style={styles.bookAgainButton}
-            onPress={onBookAgain}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.bookAgainButtonText}>
-              📅 Book {selectedCleaner.name} Again
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Show confirmed booking details for confirmed appointments */}
-      {isConfirmedBooking && (
-        <View style={commonStyles.formGroup}>
-          <Text style={commonStyles.formLabel}>Your Confirmed Appointment</Text>
-          <View style={styles.confirmedBookingCard}>
-            {/* For scheduled appointments, show formatted date and time */}
-            {bookingData.timing === 'scheduled' && bookingData.selectedDate && bookingData.selectedHour && bookingData.selectedMinute && (
-              <>
-                <View style={styles.confirmedBookingRow}>
-                  <Text style={styles.confirmedLabel}>Date:</Text>
-                  <Text style={styles.confirmedValue}>
-                    {formatDate(bookingData.selectedDate)}
-                  </Text>
-                </View>
-                <View style={styles.confirmedBookingRow}>
-                  <Text style={styles.confirmedLabel}>Time:</Text>
-                  <Text style={styles.confirmedValue}>
-                    {formatTime(bookingData.selectedHour, bookingData.selectedMinute)}
-                  </Text>
-                </View>
-              </>
-            )}
-            
-            {/* For ASAP appointments, show the selected time slot */}
-            {bookingData.timing === 'asap' && bookingData.selectedTimeSlot && (
-              <View style={styles.confirmedBookingRow}>
-                <Text style={styles.confirmedLabel}>Time:</Text>
-                <Text style={styles.confirmedValue}>
-                  {bookingData.selectedTimeSlot}
-                </Text>
-              </View>
-            )}
-            
-            <View style={styles.confirmedBookingRow}>
-              <Text style={styles.confirmedLabel}>Service:</Text>
-              <Text style={styles.confirmedValue}>{bookingData.cleaningType}</Text>
-            </View>
-            <View style={styles.confirmedBookingRow}>
-              <Text style={styles.confirmedLabel}>Location:</Text>
-              <Text style={styles.confirmedValue}>{bookingData.neighborhood}</Text>
-            </View>
-          </View>
         </View>
       )}
 
       {/* Show available time slots only for ASAP bookings */}
-      {!isConfirmedBooking && (
+      {!bookingData.timing || bookingData.timing === 'asap' ? (
         <View style={commonStyles.formGroup}>
           <Text style={commonStyles.formLabel}>Available Times</Text>
           <View style={styles.slotsWrapper}>
@@ -212,7 +126,7 @@ export const CleanerProfileDetailPage: React.FC<CleanerProfileDetailPageProps> =
             })}
           </View>
         </View>
-      )}
+      ) : null}
     </PageContainer>
   );
 };
@@ -308,42 +222,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
-  confirmedBookingCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  confirmedBookingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingVertical: 2,
-  },
-  confirmedLabel: {
-    fontSize: 15,
-    color: '#666',
-    fontWeight: '600',
-  },
-  confirmedValue: {
-    fontSize: 15,
-    color: '#333',
-    fontWeight: '700',
-    textAlign: 'right',
-    flex: 1,
-    marginLeft: 16,
-  },
   bookingHistoryContainer: {
     marginTop: 10,
     marginBottom: 20,
@@ -388,26 +266,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     fontStyle: 'italic',
-  },
-  bookAgainButton: {
-    backgroundColor: '#00D4AA',
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  bookAgainButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
