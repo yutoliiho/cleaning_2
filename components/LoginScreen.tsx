@@ -3,12 +3,23 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+// Check if Apple Authentication is available
+let isAppleAuthAvailable = false;
+if (Platform.OS === 'ios') {
+  try {
+    require('expo-apple-authentication');
+    isAppleAuthAvailable = true;
+  } catch (error) {
+    console.warn('Apple Authentication not available');
+  }
+}
+
 export const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, signInWithApple } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -32,6 +43,25 @@ export const LoginScreen = () => {
   const handleDemoLogin = () => {
     setEmail('demo@example.com');
     setPassword('password123');
+  };
+
+  const handleAppleSignIn = async () => {
+    if (Platform.OS !== 'ios') {
+      Alert.alert('Not Available', 'Apple Sign-In is only available on iOS devices');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const success = await signInWithApple();
+      // Don't show error message if user simply cancelled - success will be false
+    } catch (error) {
+      console.error('Apple Sign-In UI error:', error);
+      // Only show error if it's not a user cancellation
+      Alert.alert('Error', 'Apple Sign-In is not available on this device or there was an error. Please try again or use email sign-in.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -100,6 +130,29 @@ export const LoginScreen = () => {
               <Text style={styles.loginButtonText}>Sign In</Text>
             )}
           </TouchableOpacity>
+
+          {Platform.OS === 'ios' && isAppleAuthAvailable && (
+            <>
+              <View style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.divider} />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.appleButton, isLoading && styles.appleButtonDisabled]}
+                onPress={handleAppleSignIn}
+                disabled={isLoading}
+              >
+                <View style={styles.appleButtonContent}>
+                  <View style={styles.appleIconContainer}>
+                    <Text style={styles.appleIcon}>􀣺</Text>
+                  </View>
+                  <Text style={styles.appleButtonText}>Sign in with Apple</Text>
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
 
           {/* Demo Login Button */}
           <TouchableOpacity
@@ -216,6 +269,60 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#666',
+    fontSize: 16,
+  },
+  appleButton: {
+    backgroundColor: '#000',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    minHeight: 44,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  appleButtonDisabled: {
+    backgroundColor: '#999',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  appleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  appleIconContainer: {
+    marginRight: 8,
+  },
+  appleIcon: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: '600',
+  },
+  appleButtonText: {
+    color: 'white',
+    fontSize: 17,
+    fontWeight: '600',
+    letterSpacing: -0.43,
   },
   demoButton: {
     backgroundColor: 'transparent',

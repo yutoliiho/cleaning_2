@@ -3,6 +3,28 @@ import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, Te
 import { commonStyles } from '../styles/commonStyles';
 import { BookingData, Cleaner } from '../types';
 
+const getHourlyRate = (cleaningType: string): number => {
+  switch (cleaningType) {
+    case 'routine':
+      return 35;
+    case 'deep':
+      return 45;
+    default:
+      return 35; // Default to routine rate
+  }
+};
+
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 interface Message {
   id: string;
   text: string;
@@ -216,7 +238,7 @@ export const BookedDetailPage: React.FC<BookedDetailPageProps> = ({
     return 'Time TBD';
   };
 
-  const hourlyRate = 35;
+  const hourlyRate = getHourlyRate(bookingData.cleaningType);
   const hours = parseInt(bookingData.bookingHours) || 2;
   const subtotal = hours * hourlyRate;
   const trustSupportFee = Math.round(subtotal * 0.075 * 100) / 100; // 7.5% fee
@@ -278,7 +300,7 @@ export const BookedDetailPage: React.FC<BookedDetailPageProps> = ({
       
       <View style={styles.taskInfoRow}>
         <Text style={styles.taskInfoLabel}>Service</Text>
-        <Text style={styles.taskInfoValue}>{bookingData.cleaningType}</Text>
+        <Text style={styles.taskInfoValue}>{formatCleaningType(bookingData.cleaningType)}</Text>
       </View>
       
       <View style={styles.taskInfoRow}>

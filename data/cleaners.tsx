@@ -97,7 +97,7 @@ export const getCleaners = (timing: string, bookingData?: BookingData): Cleaner[
       {
         bookingId: 'BK001',
         date: '2024-01-15',
-        cleaningType: 'Standard Cleaning',
+        cleaningType: 'Routine Clean',
         status: 'completed',
         rating: 5,
         review: 'Excellent work! Very thorough and professional.'
@@ -105,7 +105,7 @@ export const getCleaners = (timing: string, bookingData?: BookingData): Cleaner[
       {
         bookingId: 'BK007',
         date: '2024-02-20',
-        cleaningType: 'Deep Cleaning',
+        cleaningType: 'Deep Clean',
         status: 'completed',
         rating: 5,
         review: 'Amazing deep clean. Highly recommend!'
@@ -146,24 +146,31 @@ export const getCleaners = (timing: string, bookingData?: BookingData): Cleaner[
     bookingHistory: [
       {
         bookingId: 'BK012',
-        date: '2024-03-05',
-        cleaningType: 'Standard Cleaning',
+        date: '2024-01-10',
+        cleaningType: 'Routine Clean',
         status: 'completed',
-        rating: 5,
-        review: 'Perfect as always! Emma is the best.'
+        rating: 4,
+        review: 'Good job, arrived on time.'
       },
       {
         bookingId: 'BK018',
-        date: '2024-03-19',
-        cleaningType: 'Standard Cleaning',
+        date: '2024-02-15',
+        cleaningType: 'Routine Clean',
         status: 'completed',
         rating: 5,
-        review: 'Consistently excellent service.'
+        review: 'Amazing attention to detail!'
       },
       {
-        bookingId: 'BK025',
-        date: '2024-04-02',
-        cleaningType: 'Deep Cleaning',
+        bookingId: 'BK024',
+        date: '2024-03-05',
+        cleaningType: 'Routine Clean',
+        status: 'completed',
+        rating: 4,
+      },
+      {
+        bookingId: 'BK030',
+        date: '2024-03-20',
+        cleaningType: 'Deep Clean',
         status: 'completed',
         rating: 5,
         review: 'Outstanding deep cleaning service!'

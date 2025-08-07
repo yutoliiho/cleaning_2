@@ -3,6 +3,28 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PageContainer } from '../components/PageContainer';
 import { BookingData, Cleaner } from '../types';
 
+const getHourlyRate = (cleaningType: string): number => {
+  switch (cleaningType) {
+    case 'routine':
+      return 35;
+    case 'deep':
+      return 45;
+    default:
+      return 35; // Default to routine rate
+  }
+};
+
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 interface ReservationConfirmedPageProps {
   bookingData: BookingData;
   cleaners: Cleaner[];
@@ -54,7 +76,7 @@ export const ReservationConfirmedPage: React.FC<ReservationConfirmedPageProps> =
           
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Service:</Text>
-            <Text style={styles.summaryValue}>{bookingData.cleaningType}</Text>
+            <Text style={styles.summaryValue}>{formatCleaningType(bookingData.cleaningType)}</Text>
           </View>
 
           {/* For scheduled appointments, show separate date and time */}
@@ -115,7 +137,7 @@ export const ReservationConfirmedPage: React.FC<ReservationConfirmedPageProps> =
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Total Cost:</Text>
             <Text style={styles.summaryValue}>
-              ${(parseInt(bookingData.bookingHours) * 35 * 1.08).toFixed(2)}
+              ${(parseInt(bookingData.bookingHours) * getHourlyRate(bookingData.cleaningType) * 1.08).toFixed(2)}
             </Text>
           </View>
 

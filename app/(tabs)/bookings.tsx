@@ -5,6 +5,17 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { getCleaners } from '../../data/cleaners';
 import { BookingDetailPage } from '../../pages/BookingDetailPage';
 
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 export default function BookingsScreen() {
   const { confirmedBookings, addSampleBookings, setBookingDetailActive } = useBookingFlow();
   const [selectedBooking, setSelectedBooking] = useState<ConfirmedBooking | null>(null);
@@ -76,7 +87,7 @@ export default function BookingsScreen() {
   const renderBookingCard = (booking: ConfirmedBooking) => (
     <TouchableOpacity key={booking.id} style={styles.bookingCard}>
       <View style={styles.bookingHeader}>
-        <Text style={styles.bookingTitle}>{booking.bookingData.cleaningType}</Text>
+        <Text style={styles.bookingTitle}>{formatCleaningType(booking.bookingData.cleaningType)}</Text>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) }]}>
           <Text style={styles.statusText}>{booking.status.toUpperCase()}</Text>
         </View>

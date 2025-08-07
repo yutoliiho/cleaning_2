@@ -22,16 +22,24 @@ export const CleaningTypePage: React.FC<CleaningTypePageProps> = ({
       style={[commonStyles.optionCard, bookingData.cleaningType === 'routine' && commonStyles.selected]}
       onPress={() => updateBookingData('cleaningType', 'routine')}
     >
-      <Text style={commonStyles.optionTitle}>Routine Clean</Text>
-      <Text style={commonStyles.optionDescription}>Regular maintenance cleaning for upkeep</Text>
+      <Text style={commonStyles.optionTitle}>Routine Clean - $35/hr</Text>
+      <Text style={commonStyles.optionDescription}>Regular maintenance cleaning for up keep</Text>
+      <Text style={commonStyles.optionDescription}>  </Text>
+      <Text style={commonStyles.optionDescription}>- home cleaning</Text>
+      <Text style={commonStyles.optionDescription}>- office cleaning</Text>
+      <Text style={commonStyles.optionDescription}>- etc.</Text>
     </TouchableOpacity>
 
     <TouchableOpacity 
       style={[commonStyles.optionCard, bookingData.cleaningType === 'deep' && commonStyles.selected]}
       onPress={() => updateBookingData('cleaningType', 'deep')}
     >
-      <Text style={commonStyles.optionTitle}>Deep Clean</Text>
-      <Text style={commonStyles.optionDescription}>Thorough cleaning for move-in/out or spring cleaning</Text>
+      <Text style={commonStyles.optionTitle}>Deep Clean - $45/hr</Text>
+      <Text style={commonStyles.optionDescription}>One off thorough cleaning </Text>
+      <Text style={commonStyles.optionDescription}>  </Text>
+      <Text style={commonStyles.optionDescription}>- move-in/out</Text>
+      <Text style={commonStyles.optionDescription}>- post-construction cleaning</Text>
+      <Text style={commonStyles.optionDescription}>- etc.</Text>
     </TouchableOpacity>
   </PageContainer>
 );

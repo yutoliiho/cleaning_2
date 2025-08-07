@@ -4,6 +4,28 @@ import { PageContainer } from '../components/PageContainer';
 import { commonStyles } from '../styles/commonStyles';
 import { BookingData, Cleaner } from '../types';
 
+const getHourlyRate = (cleaningType: string): number => {
+  switch (cleaningType) {
+    case 'routine':
+      return 35;
+    case 'deep':
+      return 45;
+    default:
+      return 35; // Default to routine rate
+  }
+};
+
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 interface PaymentPageProps {
   bookingData: BookingData;
   updateBookingData: (field: keyof BookingData, value: string) => void;
@@ -30,7 +52,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
 
   // Calculate total cost
   const hoursCount = parseInt(bookingData.bookingHours) || 2;
-  const hourlyRate = 35;
+  const hourlyRate = getHourlyRate(bookingData.cleaningType);
   const subtotal = hoursCount * hourlyRate;
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + tax;
@@ -168,7 +190,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Service:</Text>
-              <Text style={styles.summaryValue}>{bookingData.cleaningType}</Text>
+              <Text style={styles.summaryValue}>{formatCleaningType(bookingData.cleaningType)}</Text>
             </View>
             
             <View style={styles.summaryRow}>

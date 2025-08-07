@@ -40,7 +40,7 @@ export const BookingFlowProvider = ({ children }: { children: ReactNode }) => {
     selectedMinute: '',
     selectedCleaner: '',
     selectedTimeSlot: '',
-    bookingHours: '2',
+    bookingHours: '3', // Default to 3 to accommodate deep clean minimum
     homeAddress: '',
     phoneNumber: '',
     bookingNotes: '',
@@ -61,7 +61,27 @@ export const BookingFlowProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const updateBookingData = (field: keyof BookingData, value: string) => {
-    setBookingData(prev => ({ ...prev, [field]: value }));
+    setBookingData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Auto-adjust hours when cleaning type changes
+      if (field === 'cleaningType') {
+        const currentHours = parseInt(prev.bookingHours) || 3;
+        const minHours = value === 'deep' ? 3 : 2;
+        
+        // If current hours are less than minimum for new cleaning type, adjust
+        if (currentHours < minHours) {
+          newData.bookingHours = minHours.toString();
+        }
+        // If switching from deep to routine and user has exactly 3 hours, 
+        // offer the routine minimum of 2 hours
+        else if (value === 'routine' && currentHours === 3 && prev.cleaningType === 'deep') {
+          newData.bookingHours = '2';
+        }
+      }
+      
+      return newData;
+    });
   };
 
   const nextStep = () => {
@@ -115,7 +135,7 @@ export const BookingFlowProvider = ({ children }: { children: ReactNode }) => {
         bookingData: {
           zipCode: '10001',
           neighborhood: 'Manhattan',
-          cleaningType: 'Deep Clean',
+          cleaningType: 'deep', // Use lowercase to match our system
           bedrooms: '2',
           bathrooms: '2',
           squareFootage: '800',
@@ -126,7 +146,7 @@ export const BookingFlowProvider = ({ children }: { children: ReactNode }) => {
           selectedMinute: '30',
           selectedCleaner: '1',
           selectedTimeSlot: '',
-          bookingHours: '3',
+          bookingHours: '3', // Deep clean minimum
           homeAddress: '123 Main St, Apt 4B',
           phoneNumber: '(555) 123-4567',
           bookingNotes: 'Please be careful with the plants',
@@ -157,7 +177,7 @@ export const BookingFlowProvider = ({ children }: { children: ReactNode }) => {
         bookingData: {
           zipCode: '10001',
           neighborhood: 'Manhattan',
-          cleaningType: 'Regular Clean',
+          cleaningType: 'routine', // Use lowercase to match our system
           bedrooms: '1',
           bathrooms: '1',
           squareFootage: '600',

@@ -1,6 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { AuthState, User } from '../types';
+
+// Import Apple Auth only on iOS
+let AppleAuthentication: any = null;
+if (Platform.OS === 'ios') {
+  try {
+    AppleAuthentication = require('expo-apple-authentication');
+  } catch (error) {
+    console.warn('Expo Apple Authentication not available:', error);
+  }
+}
 
 // Dummy user data for testing
 const DUMMY_USER: User = {
@@ -54,6 +65,7 @@ const DUMMY_USER: User = {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
+  signInWithApple: () => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
   continueAsGuest: (guestData: { name: string; email: string; phoneNumber?: string }) => Promise<void>;
@@ -162,6 +174,76 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signInWithApple = async (): Promise<boolean> => {
+    try {
+      // Check if Apple Sign-In is available
+      if (!AppleAuthentication) {
+        console.warn('Apple Sign-In is not available on this platform.');
+        return false;
+      }
+
+      // Perform the Apple Sign-In request
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      // Verify the response
+      if (!credential.user) {
+        console.warn('Apple Sign-In: No user identifier received');
+        return false;
+      }
+
+      // Create user object from Apple response
+      const { email, fullName, user } = credential;
+      
+      // Handle name from Apple response
+      let displayName = 'Apple User';
+      if (fullName && (fullName.givenName || fullName.familyName)) {
+        displayName = `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim();
+      }
+
+      // Handle email - Apple might not provide email on subsequent logins
+      const userEmail = email || `${user}@privaterelay.appleid.com`;
+
+      const appleUser = {
+        ...DUMMY_USER,
+        id: user,
+        name: displayName,
+        email: userEmail,
+        lastLoginAt: new Date().toISOString(),
+      };
+
+      await AsyncStorage.setItem(AUTH_TOKEN_KEY, `apple_token_${user}`);
+      await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(appleUser));
+      await AsyncStorage.removeItem(GUEST_DATA_KEY); // Clear guest data
+      
+      setAuthState({
+        isAuthenticated: true,
+        user: appleUser,
+        isLoading: false,
+        isGuest: false,
+        guestData: undefined,
+      });
+      
+      return true;
+      
+    } catch (error: any) {
+      // Handle specific Apple Sign-In errors
+      if (error.code === 'ERR_CANCELED' || error.code === 'ERR_REQUEST_CANCELED') {
+        // User cancelled - this is normal behavior, not an error
+        console.log('Apple Sign-In: User cancelled authentication');
+        return false;
+      }
+      
+      // Only log actual technical errors
+      console.error('Apple Sign-In technical error:', error);
+      return false;
+    }
+  };
+
   const logout = async (): Promise<void> => {
     try {
       await AsyncStorage.multiRemove([AUTH_TOKEN_KEY, USER_DATA_KEY, GUEST_DATA_KEY]);
@@ -259,6 +341,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     continueAsGuest,
     convertGuestToUser,
     requireAuth,
+    signInWithApple, // Add signInWithApple to the context value
   };
 
   return (

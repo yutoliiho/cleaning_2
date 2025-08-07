@@ -4,6 +4,17 @@ import { PageContainer } from '../components/PageContainer';
 import { commonStyles } from '../styles/commonStyles';
 import { BookingData, Cleaner } from '../types';
 
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 interface ReservationPendingPageProps {
   bookingData: BookingData;
   updateBookingData: (field: keyof BookingData, value: string) => void;
@@ -44,7 +55,7 @@ export const ReservationPendingPage: React.FC<ReservationPendingPageProps> = ({
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Service:</Text>
-          <Text style={styles.summaryValue}>{bookingData.cleaningType} Clean</Text>
+          <Text style={styles.summaryValue}>{formatCleaningType(bookingData.cleaningType)}</Text>
         </View>
       </View>
 

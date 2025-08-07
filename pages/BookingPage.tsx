@@ -5,6 +5,28 @@ import { commonStyles } from '../styles/commonStyles';
 import { BookingData, Cleaner } from '../types';
 import { formatPhoneNumber, isValidAddress, isValidPhoneNumber } from '../utils/zipCodeUtils';
 
+const getHourlyRate = (cleaningType: string): number => {
+  switch (cleaningType) {
+    case 'routine':
+      return 35;
+    case 'deep':
+      return 45;
+    default:
+      return 35; // Default to routine rate
+  }
+};
+
+const formatCleaningType = (cleaningType: string): string => {
+  switch (cleaningType) {
+    case 'routine':
+      return 'Routine Clean';
+    case 'deep':
+      return 'Deep Clean';
+    default:
+      return cleaningType; // Return as-is if unknown
+  }
+};
+
 interface BookingPageProps {
   bookingData: BookingData;
   updateBookingData: (field: keyof BookingData, value: string) => void;
@@ -100,8 +122,21 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 
   const hoursCount = parseInt(bookingData.bookingHours) || 2;
 
+  // Get minimum hours based on cleaning type
+  const getMinimumHours = (cleaningType: string): number => {
+    switch (cleaningType) {
+      case 'deep':
+        return 3;
+      case 'routine':
+      default:
+        return 2;
+    }
+  };
+
+  const minimumHours = getMinimumHours(bookingData.cleaningType);
+
   const handleHoursDecrease = () => {
-    if (hoursCount > 2) {
+    if (hoursCount > minimumHours) {
       updateBookingData('bookingHours', (hoursCount - 1).toString());
     }
   };
@@ -195,16 +230,16 @@ export const BookingPage: React.FC<BookingPageProps> = ({
         )}
         
         <Counter
-          label="Hours Needed (minimum 2 hours)"
+          label={`Hours Needed (minimum ${minimumHours} hours)`}
           value={bookingData.bookingHours}
           onDecrease={handleHoursDecrease}
           onIncrease={handleHoursIncrease}
-          canDecrease={hoursCount > 2}
+          canDecrease={hoursCount > minimumHours}
           canIncrease={hoursCount < 8}
         />
         <Text style={styles.hoursNote}>
-          Estimated cost: ${(hoursCount * 35).toFixed(0)} 
-          ({bookingData.bookingHours} hours × $35/hour)
+          Estimated cost: ${(hoursCount * getHourlyRate(bookingData.cleaningType)).toFixed(0)} 
+          ({bookingData.bookingHours} hours × ${getHourlyRate(bookingData.cleaningType)}/hour)
         </Text>
       </View>
 
